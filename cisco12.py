@@ -760,9 +760,6 @@ def verify_authentication_mode_on_interface_81(connection, interface_name):
     command = f'show run interface {interface_name} | include authentication mode'
     output = connection.send_command(command)
     
-    # Print the command output for debugging
-    print("Command Output:\n", output)
-    
     # Check if 'authentication mode' is present in the output
     if 'authentication mode md5' in output:
         return True  # Authentication mode is set on the interface
@@ -1879,7 +1876,7 @@ def main():
     })
 
 
-    result = rip_rip_authentication_mode_md5_88(connection, interface_name)
+    result = rip_rip_authentication_mode_md5_88(connection)
     if result:
         print(f"MD5 authentication mode is set on interface {interface_name}.")
     else:
