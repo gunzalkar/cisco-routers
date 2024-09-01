@@ -5,8 +5,8 @@ import csv
 # Enable logging for debugging
 logging.basicConfig(filename='netmiko_debug.log', level=logging.DEBUG)
 interface_name = 'loopback 1'
-
-
+interface_name_2 = 'FastEthernet1/0'
+interface = "Loopback 1"
 def connect_to_router():
     device = {
         'device_type': 'cisco_ios',
@@ -1680,7 +1680,6 @@ def main():
     })
 
     # Check 68: Proxy ARP Status on Loopback 1
-    interface = "Loopback 1"
     result = verify_proxy_arp_status_68(connection, interface)
     if result:
         print(f"Check 68 Passed: Proxy ARP is not enabled on {interface}.")
@@ -1707,7 +1706,6 @@ def main():
     })
 
     # Check 70: uRPF Running on Loopback 1
-    interface = "loopback 1"
     result = verify_urpf_running_70(connection, interface)
     if result:
         print(f"Check 70 Passed: uRPF is running on the {interface} interface.")
@@ -1735,15 +1733,15 @@ def main():
     })
 
     # Check 72: Access-group Applied to 
-    interface_name = 'FastEthernet1/0'
-    result = verify_access_group_applied_72(connection, interface_name)
+
+    result = verify_access_group_applied_72(connection, interface_name_2)
     if result:
-        print(f"Check 72 Passed: Access-group is applied to the interface {interface_name}.")
+        print(f"Check 72 Passed: Access-group is applied to the interface {interface_name_2}.")
     else:
-        print(f"Check 72 Failed: Access-group is not applied to the interface {interface_name}.")
+        print(f"Check 72 Failed: Access-group is not applied to the interface {interface_name_2}.")
     results.append({
         'Serial Number': 69,
-        'Objective': f'Verify that access-group is applied to the interface {interface_name}.',
+        'Objective': f'Verify that access-group is applied to the interface {interface_name_2}.',
         'Result': 'Pass' if result else 'Fail',
         'Compliance': 'Compliant' if result else 'Non-Compliant'
     })
@@ -1774,7 +1772,6 @@ def main():
         'Compliance': 'Compliant' if result else 'Non-Compliant'
     })
 
-    interface_name = 'loopback 1'
     result = ip_authentication_key_chain_eigrp_80(connection, interface_name)
     if result:
         print(f"Check 80 Passed: Appropriate key chain is set on interface {interface_name}.")
