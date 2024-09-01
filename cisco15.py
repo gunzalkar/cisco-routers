@@ -7,7 +7,10 @@ def load_config(file_path):
     config = {}
     with open(file_path, 'r') as file:
         for line in file:
-            key, value = line.strip().split('=', 1)
+            line = line.strip()
+            if not line or '=' not in line:
+                continue  # Skip empty lines or lines without '='
+            key, value = line.split('=', 1)
             value = value.strip("'")  # Remove surrounding quotes
 
             # Check if the value is a list (e.g., ['10', '20', '30'])
