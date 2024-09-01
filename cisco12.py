@@ -1,7 +1,7 @@
-from netmiko import ConnectHandler #type:ignore
-import re
-import csv
 import ast
+from netmiko import ConnectHandler # type: ignore
+import csv
+import re
 
 def load_config(file_path):
     config = {}
@@ -19,6 +19,7 @@ def load_config(file_path):
 
 config = load_config('config.txt')
 
+# Extracting configuration values
 interface_name = config.get('INTERFACE_NAME')
 interface_name_2 = config.get('INTERFACE_NAME_2')
 interface = config.get('INTERFACE')
@@ -36,14 +37,21 @@ expected_keys_count = int(config.get('EXPECTED_KEYS_COUNT'))
 access_list_identifier = config.get('ACCESS_LIST_IDENTIFIER')
 key_chain_name = config.get('KEY_CHAIN_NAME')
 
+# Router connection details
+host = config.get('HOST')
+username = config.get('USERNAME')
+password = config.get('PASSWORD')
+secret = config.get('SECRET')
+timeout = int(config.get('TIMEOUT'))
+
 def connect_to_router():
     device = {
         'device_type': 'cisco_ios',
-        'host': '192.168.1.1',
-        'username': 'super',
-        'password': 'password',
-        'secret': 'password',  # Replace with your enable password
-        'timeout': 60,  # Increase the timeout if needed
+        'host': host,
+        'username': username,
+        'password': password,
+        'secret': secret,  # Enable password
+        'timeout': timeout,  # Increase the timeout if needed
     }
     return ConnectHandler(**device)
 
@@ -398,8 +406,8 @@ def verify_snmp_user_and_security_settings_37(connection, expected_user_name, ex
     output = connection.send_command(command)
     
     # Use regex to find the user name and security settings in the output
-    user_name_pattern = rf'username:\s*{expected_user_name}'
-    security_settings_pattern = rf'security model:\s*{expected_security_settings}'
+    user_name_pattern = rf'User name:\s*{expected_user_name}'
+    security_settings_pattern = rf'Privacy Protocol:\s*{expected_security_settings}'
     
     user_name_match = re.search(user_name_pattern, output, re.IGNORECASE)
     security_settings_match = re.search(security_settings_pattern, output, re.IGNORECASE)
