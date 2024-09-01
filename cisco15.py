@@ -191,7 +191,7 @@ def verify_aaa_authentication_line_con_0_14(connection):
     output = connection.send_command(command)
     
     # Check if the output contains "login authentication"
-    if 'con' in output:
+    if 'console login authentication' in output:
         return True
     return 
 
@@ -200,7 +200,7 @@ def verify_aaa_authentication_line_tty_15(connection):
     output = connection.send_command(command)
       
     # Check if the output contains "login authentication"
-    if 'tty' in output:
+    if 'tty login authentication' in output:
         return True
     return False
 
@@ -209,10 +209,9 @@ def verify_aaa_authentication_line_vty_16(connection):
     output = connection.send_command(command)
     
     # Check if the output contains "login authentication"
-    if 'vty' in output:
+    if 'vty  login authentication' in output:
         return True
     return False
-
 
 def verify_aaa_accounting_commands_17(connection):
     command = 'show running-config | include aaa accounting commands'
@@ -321,7 +320,7 @@ def verify_snmp_agent_status_28(connection):
     output = connection.send_command(command)
     
     # Check if the output contains the phrase "SNMP agent not enabled"
-    if "SNMP agent not enabled" in output:
+    if "Community name: snmp" in output:
         return True
     return False
 
@@ -437,11 +436,11 @@ def verify_hostname_38(connection):
     return False
 
 def verify_domain_name_39(connection):
-    command = 'show run | include ip domain-name'
+    command = 'show run | include ip domain name'
     output = connection.send_command(command)
     
     # Check if 'ip domain-name' is in the output
-    if 'ip domain-name' in output:
+    if 'ip domain name' in output:
         return True
     return False
 
@@ -495,7 +494,7 @@ def verify_bootp_enabled_45(connection):
     output = connection.send_command(command)
 
     # Check if 'no ip bootp server' is not present in the output
-    if 'no ip bootp server' not in output:
+    if 'no ip bootp server' in output:
         return True
     return False
 
@@ -504,9 +503,10 @@ def verify_dhcp_service_enabled_46(connection):
     output = connection.send_command(command)
         
     # Check if 'no service dhcp' is not present in the output
-    if 'no service dhcp' not in output:
+    if 'no service dhcp' in output:
         return True
     return False
+
 
 def verify_identd_enabled_47(connection):
     command = 'show run | include identd'
@@ -666,7 +666,7 @@ def verify_loopback_interface_defined_63(connection):
     return False
 
 def verify_aaa_services_bound_to_source_interface_64(connection):
-    command = 'show run | include tacacs source | include radius source'
+    command = 'show run | include source'
     output = connection.send_command(command)
     
     # Check if 'tacacs source' or 'radius source' is present in the output
@@ -749,7 +749,7 @@ def verify_access_list_defined_71(connection, access_list_identifier):
 
 access_list_identifier = '122'
 
-def verify_access_group_applied_72(connection, interface_name):
+def verify_access_group_applied_72(connection):
     command = f'show run | section interface {interface_name}'
     output = connection.send_command(command)
 
@@ -823,7 +823,7 @@ def set_eigrp_md5_79(connection):
     if 'authentication mode md5' in output:
         return True  # Key chain is set
     return False
-
+interface_name = "loopback 1"
 def ip_authentication_key_chain_eigrp_80(connection, interface_name):
     command = f'show run interface {interface_name} | include key-chain'
     output = connection.send_command(command)
@@ -1852,7 +1852,8 @@ def main():
     })
 
     # Check 72: Access-group Applied to Interface
-    result = verify_access_group_applied_72(connection, interface_name)
+    interface_name = 'FastEthernet1/0'
+    result = verify_access_group_applied_72(connection)
     if result:
         print(f"Check 72 Passed: Access-group is applied to the interface {interface_name}.")
     else:
@@ -1956,7 +1957,7 @@ def main():
     })
 
     # Check 80: Key Chain on Interface for EIGRP
-    interface_name = "your_interface_name"  # Replace with your interface name
+    interface_name = "loopback 1"  # Replace with your interface name
     result = ip_authentication_key_chain_eigrp_80(connection, interface_name)
     if result:
         print(f"Check 80 Passed: Appropriate key chain is set on interface {interface_name}.")
@@ -2034,7 +2035,7 @@ def main():
         'Compliance': 'Compliant' if result else 'Non-Compliant'
     })
 
-    result = verify_key_chain_defined_86(connection, interface_name)
+    result = verify_key_chain_defined_86(connection)
     if result:
         print(f"Key chain mode is set on the interface {interface_name}.")
     else:
@@ -2046,7 +2047,7 @@ def main():
         'Compliance': 'Compliant' if result else 'Non-Compliant'
     })
     
-    result = rip_rip_authentication_mode_md5_88(connection, interface_name)
+    result = rip_rip_authentication_mode_md5_88(connection)
     if result:
         print(f"MD5 authentication mode is set on interface {interface_name}.")
     else:
