@@ -1,13 +1,59 @@
-from netmiko import ConnectHandler #type:ignore
-import logging
-import re
+import ast
+from netmiko import ConnectHandler # type: ignore
 import csv
+import re
 
-interface_name ='loopback 1'
-interface_name_2 = 'FastEthernet1/0'
-interface = "Loopback 1"
-# Enable logging for debugging
-logging.basicConfig(filename='netmiko_debug.log', level=logging.DEBUG)
+def load_config(file_path):
+    config = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            key, value = line.strip().split('=', 1)
+            value = value.strip("'")  # Remove surrounding quotes
+
+            # Check if the value is a list (e.g., ['10', '20', '30'])
+            if value.startswith('[') and value.endswith(']'):
+                config[key] = ast.literal_eval(value)
+            else:
+                config[key] = value
+    return config
+
+config = load_config('config.txt')
+
+# Extracting configuration values
+interface_name = config.get('INTERFACE_NAME')
+interface_name_2 = config.get('INTERFACE_NAME_2')
+interface = config.get('INTERFACE')
+expected_user_name = config.get('EXPECTED_USER_NAME')
+expected_security_settings = config.get('EXPECTED_SECURITY_SETTINGS')
+expected_group_name = config.get('EXPECTED_GROUP_NAME')
+expected_security_model = config.get('EXPECTED_SECURITY_MODEL')
+vty_acl_number = config.get('VTY_ACL_NUMBER')
+required_entries = config.get('REQUIRED_ENTRIES')
+line_start = config.get('LINE_START')
+line_end = config.get('LINE_END')
+tty_line_number = config.get('TTY_LINE_NUMBER')
+vty_line_number = config.get('VTY_LINE_NUMBER')
+expected_keys_count = int(config.get('EXPECTED_KEYS_COUNT'))
+access_list_identifier = config.get('ACCESS_LIST_IDENTIFIER')
+key_chain_name = config.get('KEY_CHAIN_NAME')
+
+# Router connection details
+host = config.get('HOST')
+username = config.get('USERNAME')
+password = config.get('PASSWORD')
+secret = config.get('SECRET')
+timeout = int(config.get('TIMEOUT'))
+
+def connect_to_router():
+    device = {
+        'device_type': 'cisco_ios',
+        'host': host,
+        'username': username,
+        'password': password,
+        'secret': secret,  # Enable password
+        'timeout': timeout,  # Increase the timeout if needed
+    }
+    return ConnectHandler(**device)
 
 def connect_to_router():
     device = {
@@ -88,9 +134,6 @@ def verify_acl_entries_4(connection, vty_acl_number, required_entries):
     output = connection.send_command(command)
     return all(f'{entry} ' in output for entry in required_entries)
 
-vty_acl_number = '10'  # Replace with the actual ACL number
-required_entries = ['10', '20', '30']  # List the sequence numbers you want to verify
-
 def verify_acl_set_5(connection, line_start, line_end, vty_acl_number):
     command = f'show run | sec vty {line_start} {line_end}'
     output_line = connection.send_command(command)
@@ -101,9 +144,6 @@ def verify_acl_set_5(connection, line_start, line_end, vty_acl_number):
 
     # Return True if both checks are passed
     return True
-
-line_start = '0'  # Replace with the starting line number
-line_end = '4'    # Replace with the ending line number
 
 def verify_timeout_configured_6(connection):
     command = 'show run | sec line aux 0'
@@ -143,14 +183,11 @@ def verify_tty_timeout_configured_8(connection, tty_line_number):
     
     # Check if 'exec-timeout' is present in the output
     return 'exec-timeout' in output
-tty_line_number = '44' 
 
 def verify_vty_timeout_configured_9(connection, vty_line_number):
     command = f'show line vty {vty_line_number} | begin Timeout'
     output = connection.send_command(command)
     return 'Idle EXEC' in output
-
-vty_line_number = '0'  # Replace with the actual VTY line number
 
 def verify_aux_input_transports_disabled_10(connection):
     command = 'show line aux 0 | include input transports'
@@ -368,9 +405,6 @@ def verify_acl_entries_snmp_33(connection, vty_acl_number, required_entries):
     output = connection.send_command(command)
     return all(f'{entry} ' in output for entry in required_entries)
 
-vty_acl_number = '10'  # Replace with the actual ACL number
-required_entries = ['10', '20', '30']  # List the sequence numbers you want to verify
-
 def verify_snmp_traps_enabled_34(connection):
     command = 'show run | incl snmp-server'
     output = connection.send_command(command)
@@ -405,10 +439,6 @@ def verify_snmp_group_and_security_model_36(connection, expected_group_name, exp
         return True
     return False
 
-# Example usage
-expected_group_name = 'hello'  # Replace with the expected group name
-expected_security_model = 'v3 priv'  # Replace with the expected security model
-
 def verify_snmp_user_and_security_settings_37(connection, expected_user_name, expected_security_settings):
     command = 'show snmp user'
     output = connection.send_command(command)
@@ -424,9 +454,6 @@ def verify_snmp_user_and_security_settings_37(connection, expected_user_name, ex
     if user_name_match and security_settings_match:
         return True
     return False
-# Example usage
-expected_user_name = 'admin'  # Replace with the expected user name
-expected_security_settings = 'v3 priv'  # Replace with the expected security settings
 
 def verify_hostname_38(connection):
     command = 'show run | include hostname'
@@ -508,7 +535,6 @@ def verify_dhcp_service_enabled_46(connection):
     if 'no service dhcp' in output:
         return True
     return False
-
 
 def verify_identd_enabled_47(connection):
     command = 'show run | include identd'
@@ -639,7 +665,7 @@ def verify_ntp_trusted_keys_60(connection, expected_keys_count):
     if trusted_keys_count_actual == expected_keys_count:
         return True
     return False
-expected_keys_count = 3
+
 def verify_ntp_servers_configured_61(connection):
     command = 'show run | include ntp server'
     output = connection.send_command(command)
@@ -749,8 +775,6 @@ def verify_access_list_defined_71(connection, access_list_identifier):
         return True  # Access-list definitions are present
     return False
 
-access_list_identifier = '122'
-
 def verify_access_group_applied_72(connection):
     command = f'show run | section interface {interface_name}'
     output = connection.send_command(command)
@@ -769,8 +793,6 @@ def verify_key_chain_defined_73(connection, key_chain_name):
     if key_chain_name in output:
         return True  # Key chain is defined
     return False
-
-key_chain_name = 'myKeyChain'
 
 def verify_key_chain_number_defined_74(connection):
     command = 'show run | section key chain'
@@ -906,7 +928,6 @@ def verify_bgp_neighbor_password_89(connection):
     if 'password' in output:
         return True  # Neighbor password is defined in the BGP configuration
     return False
-
 
 def main():
     connection = connect_to_router()
@@ -1436,8 +1457,6 @@ def main():
         'Result': 'Pass' if result else 'Fail',
         'Compliance': 'Compliant' if result else 'Non-Compliant'
     })
-
-
 
     # Check 41: SSH Timeout Configuration
     result = verify_ssh_timeout_41(connection)
