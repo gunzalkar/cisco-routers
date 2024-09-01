@@ -233,7 +233,7 @@ def verify_aaa_authentication_line_con_0_14(connection):
     output = connection.send_command(command)
     
     # Check if the output contains "login authentication"
-    if 'login' in output:
+    if 'line' in output:
         return True
     return 
 
@@ -242,7 +242,7 @@ def verify_aaa_authentication_line_tty_15(connection):
     output = connection.send_command(command)
       
     # Check if the output contains "login authentication"
-    if 'login' in output:
+    if 'line' in output:
         return True
     return False
 
@@ -251,7 +251,7 @@ def verify_aaa_authentication_line_vty_16(connection):
     output = connection.send_command(command)
     
     # Check if the output contains "login authentication"
-    if 'login' in output:
+    if 'line' in output:
         return True
     return False
 
