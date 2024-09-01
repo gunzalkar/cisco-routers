@@ -411,7 +411,7 @@ def verify_domain_name_39(connection):
     output = connection.send_command(command)
     
     # Check if 'ip domain-name' is in the output
-    if 'ip domain-name' in output:
+    if 'ip domain name' in output:
         return True
     return False
 
@@ -746,6 +746,7 @@ def verify_key_chain_string_defined_75(connection):
         return True  # Key chain is defined
     return False
 
+interface_name = "loopback 1"
 def ip_authentication_key_chain_eigrp_80(connection, interface_name):
     command = f'show run interface {interface_name} | include key-chain'
     output = connection.send_command(command)
@@ -770,9 +771,7 @@ def verify_authentication_mode_on_interface_81(connection, interface_name):
 def verify_message_digest_for_ospf_82(connection):
     command = 'show run | section router ospf'
     output = connection.send_command(command)
-    
-    # Print the command output for debugging
-    print("Command Output:\n", output)
+
     
     # Check if 'message-digest' is present in the output
     if 'message-digest' in output:
@@ -806,7 +805,7 @@ def verify_key_chain_defined_85(connection):
         return True  # Key chain is defined
     return False
 
-def verify_key_chain_defined_86(connection):
+def verify_key_chain_defined_86(connection, interface_name):
     command = f'show run interface {interface_name} | include key-chain'
     output = connection.send_command(command)
 
