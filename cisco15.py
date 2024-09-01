@@ -1010,7 +1010,7 @@ def main():
     if result:
         print(f"Check 8 Passed: A timeout is configured for TTY line {tty_line_number}.")
     else:
-        print(f"Check 8 Failed: No timeout configuration found for TTY line {tty_line_number}.")
+        print(f"Check 8 Failed: No timeout configuration found for TTY line {tty_line_number} (Need Physical Hardware).")
     results.append({
         'Serial Number': 8,
         'Objective': f'Verify that a timeout is configured for TTY line {tty_line_number}.',
