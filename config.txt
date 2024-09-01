@@ -14,3 +14,10 @@ VTY_LINE_NUMBER='0'
 EXPECTED_KEYS_COUNT='3'
 ACCESS_LIST_IDENTIFIER='122'
 KEY_CHAIN_NAME='myKeyChain'
+
+# Router connection details
+HOST='192.168.1.1'
+USERNAME='super'
+PASSWORD='password'
+SECRET='password'
+TIMEOUT='60'
