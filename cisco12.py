@@ -294,7 +294,7 @@ def verify_snmp_agent_status_28(connection):
     output = connection.send_command(command)
     
     # Check if the output contains the phrase "SNMP agent not enabled"
-    if "SNMP agent not enabled" in output:
+    if "Community name: snmp" in output:
         return True
     return False
 
@@ -339,7 +339,6 @@ def verify_acl_entries_snmp_33(connection, vty_acl_number, required_entries):
     command = f'show ip access-lists {vty_acl_number}'
     output = connection.send_command(command)
     return all(f'{entry} ' in output for entry in required_entries)
-
 
 def verify_snmp_traps_enabled_34(connection):
     command = 'show run | incl snmp-server'
@@ -408,7 +407,7 @@ def verify_hostname_38(connection):
     return False
 
 def verify_domain_name_39(connection):
-    command = 'show run | include ip domain-name'
+    command = 'show run | include ip domain name'
     output = connection.send_command(command)
     
     # Check if 'ip domain-name' is in the output
@@ -466,7 +465,7 @@ def verify_bootp_enabled_45(connection):
     output = connection.send_command(command)
 
     # Check if 'no ip bootp server' is not present in the output
-    if 'no ip bootp server' not in output:
+    if 'no ip bootp server' in output:
         return True
     return False
 
@@ -475,7 +474,7 @@ def verify_dhcp_service_enabled_46(connection):
     output = connection.send_command(command)
         
     # Check if 'no service dhcp' is not present in the output
-    if 'no service dhcp' not in output:
+    if 'no service dhcp' in output:
         return True
     return False
 
@@ -637,7 +636,7 @@ def verify_loopback_interface_defined_63(connection):
     return False
 
 def verify_aaa_services_bound_to_source_interface_64(connection):
-    command = 'show run | include tacacs source | include radius source'
+    command = 'show run | include source'
     output = connection.send_command(command)
     
     # Check if 'tacacs source' or 'radius source' is present in the output
@@ -1711,7 +1710,7 @@ def main():
     })
 
     # Check 70: uRPF Running on Loopback 1
-    interface = "Loopback 1"
+    interface = "loopback 1"
     result = verify_urpf_running_70(connection, interface)
     if result:
         print(f"Check 70 Passed: uRPF is running on the {interface} interface.")
@@ -1738,7 +1737,8 @@ def main():
         'Compliance': 'Compliant' if result else 'Non-Compliant'
     })
 
-    # Check 72: Access-group Applied to Interface
+    # Check 72: Access-group Applied to 
+    interface_name = 'FastEthernet1/0'
     result = verify_access_group_applied_72(connection, interface_name)
     if result:
         print(f"Check 72 Passed: Access-group is applied to the interface {interface_name}.")
@@ -1777,8 +1777,6 @@ def main():
         'Compliance': 'Compliant' if result else 'Non-Compliant'
     })
 
-    # Check 80: Key Chain on Interface for EIGRP
-    interface_name = "your_interface_name"  # Replace with your interface name
     result = ip_authentication_key_chain_eigrp_80(connection, interface_name)
     if result:
         print(f"Check 80 Passed: Appropriate key chain is set on interface {interface_name}.")
