@@ -778,6 +778,7 @@ def verify_message_digest_for_ospf_82(connection):
         return True  # Message digest for OSPF is defined
     return False
 
+interface_name = 'loopback 1'
 def verify_md5_key_on_interface_83(connection, interface_name):
     command = f'show run int {interface_name}'
     output = connection.send_command(command)
@@ -805,7 +806,7 @@ def verify_key_chain_defined_85(connection):
         return True  # Key chain is defined
     return False
 
-def verify_key_chain_defined_86(connection, interface_name):
+def verify_key_chain_defined_86(connection):
     command = f'show run interface {interface_name} | include key-chain'
     output = connection.send_command(command)
 
@@ -1776,6 +1777,7 @@ def main():
         'Compliance': 'Compliant' if result else 'Non-Compliant'
     })
 
+    interface_name = 'loopback 1'
     result = ip_authentication_key_chain_eigrp_80(connection, interface_name)
     if result:
         print(f"Check 80 Passed: Appropriate key chain is set on interface {interface_name}.")
@@ -1852,7 +1854,7 @@ def main():
         'Compliance': 'Compliant' if result else 'Non-Compliant'
     })
 
-    result = verify_key_chain_defined_86(connection, interface_name)
+    result = verify_key_chain_defined_86(connection)
     if result:
         print(f"Key chain mode is set on the interface {interface_name}.")
     else:
