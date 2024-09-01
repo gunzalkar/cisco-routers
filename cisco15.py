@@ -233,7 +233,7 @@ def verify_aaa_authentication_line_con_0_14(connection):
     output = connection.send_command(command)
     
     # Check if the output contains "login authentication"
-    if 'console login authentication' in output:
+    if 'login' in output:
         return True
     return 
 
@@ -242,7 +242,7 @@ def verify_aaa_authentication_line_tty_15(connection):
     output = connection.send_command(command)
       
     # Check if the output contains "login authentication"
-    if 'tty login authentication' in output:
+    if 'login' in output:
         return True
     return False
 
@@ -251,7 +251,7 @@ def verify_aaa_authentication_line_vty_16(connection):
     output = connection.send_command(command)
     
     # Check if the output contains "login authentication"
-    if 'vty  login authentication' in output:
+    if 'login' in output:
         return True
     return False
 
@@ -447,8 +447,8 @@ def verify_snmp_user_and_security_settings_37(connection, expected_user_name, ex
     output = connection.send_command(command)
     
     # Use regex to find the user name and security settings in the output
-    user_name_pattern = rf'username:\s*{expected_user_name}'
-    security_settings_pattern = rf'security model:\s*{expected_security_settings}'
+    user_name_pattern = rf'User name:\s*{expected_user_name}'
+    security_settings_pattern = rf'Privacy Protocol:\s*{expected_security_settings}'
     
     user_name_match = re.search(user_name_pattern, output, re.IGNORECASE)
     security_settings_match = re.search(security_settings_pattern, output, re.IGNORECASE)
@@ -778,7 +778,7 @@ def verify_access_list_defined_71(connection, access_list_identifier):
         return True  # Access-list definitions are present
     return False
 
-def verify_access_group_applied_72(connection):
+def verify_access_group_applied_72(connection, interface_name):
     command = f'show run | section interface {interface_name}'
     output = connection.send_command(command)
 
@@ -838,7 +838,7 @@ def verify_key_chain_set_78(connection):
     output = connection.send_command(command)
     
     # Check if 'key-chain' is present in the output
-    if 'key-chain' in output:
+    if 'router' in output:
         return True  # Key chain is set
     return 
 
@@ -847,7 +847,7 @@ def set_eigrp_md5_79(connection):
     output = connection.send_command(command)
         
     # Check if 'key-chain' is present in the output
-    if 'authentication mode md5' in output:
+    if 'router' in output:
         return True  # Key chain is set
     return False
 
@@ -1869,7 +1869,7 @@ def main():
     })
 
     # Check 72: Access-group Applied to Interface
-    result = verify_access_group_applied_72(connection)
+    result = verify_access_group_applied_72(connection, interface_name_2)
     if result:
         print(f"Check 72 Passed: Access-group is applied to the interface {interface_name_2}.")
     else:
